@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Study Timer</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #fcfcfc;
+            color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            transition: background-color 0.4s, color 0.4s;
+            overflow: hidden;
+        }
+
+        body.dark-mode {
+            background-color: #000;
+            color: #fff;
+        }
+
+        #timer {
+            font-size: 20vw;
+            font-weight: 900;
+            letter-spacing: -1.5vw;
+            line-height: 1;
+            user-select: none;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .running #timer {
+            transform: scale(1.05);
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 8%;
+            display: flex;
+            gap: 12px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+        }
+
+        body:hover .controls {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        button {
+            background: #000;
+            color: #fff;
+            border: 2px solid #000;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        body.dark-mode button {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .reset-btn {
+            background: #eee !important;
+            color: #666 !important;
+            border-color: #eee !important;
+        }
+    </style>
+</head>
+<body id="mainBody">
+
+    <div id="timer">00:00:00</div>
+
+    <div class="controls">
+        <button onclick="toggleTimer()" id="startBtn">Start</button>
+        <button class="reset-btn" onclick="resetTimer()">Reset</button>
+        <button onclick="toggleDarkMode()">Dark</button>
+    </div>
+
+    <script>
+        let totalSeconds = 0;
+        let timerInterval = null;
+
+        function updateDisplay() {
+            const h = Math.floor(totalSeconds / 3600);
+            const m = Math.floor((totalSeconds % 3600) / 60);
+            const s = totalSeconds % 60;
+
+            const display = 
+                (h < 10 ? '0' + h : h) + ':' + 
+                (m < 10 ? '0' + m : m) + ':' + 
+                (s < 10 ? '0' + s : s);
+            
+            document.getElementById('timer').innerText = display;
+        }
+
+        function toggleTimer() {
+            const btn = document.getElementById('startBtn');
+            const body = document.getElementById('mainBody');
+
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                btn.innerText = 'Resume';
+                body.classList.remove('running');
+            } else {
+                timerInterval = setInterval(() => {
+                    totalSeconds++;
+                    updateDisplay();
+                }, 1000);
+                btn.innerText = 'Stop';
+                body.classList.add('running');
+            }
+        }
+
+       
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            totalSeconds = 0;
+            document.getElementById('startBtn').innerText = 'Start';
+            document.getElementById('mainBody').classList.remove('running');
+            updateDisplay();
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+    </script>
+</body>
+</html>
